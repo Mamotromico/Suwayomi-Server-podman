@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # exit early in case the file already exists
-if [ -f /home/suwayomi/.local/share/Tachidesk/server.conf ]; then
+if [ -f ~/.local/share/Tachidesk/server.conf ]; then
     exit 0
 fi
 
-mkdir -p /home/suwayomi/.local/share/Tachidesk
+mkdir -p ~/.local/share/Tachidesk
 
 # extract the server reference config from the jar
-unzip -q -j /home/suwayomi/startup/tachidesk_latest.jar "server-reference.conf" -d /home/suwayomi/startup
+unzip -q -j ~/startup/tachidesk_latest.jar "server-reference.conf" -d ~/startup
 
 # move and rename the reference config
-mv /home/suwayomi/startup/server-reference.conf /home/suwayomi/.local/share/Tachidesk/server.conf
+mv ~/startup/server-reference.conf ~/.local/share/Tachidesk/server.conf
