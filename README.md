@@ -1,24 +1,12 @@
-# Suwayomi-Server Docker Container
+# Suwayomi-Server Podman Container
 
-|                                                                                                                                                                                                                                                   Status                                                                                                                                                                                                                                                    |                                                                                                                             Stable                                                                                                                              |                                                                                                                             Preview                                                                                                                              |                                                                      Discord Support                                                                       |
-|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------:|
-| [![Build Docker Images](https://github.com/Suwayomi/Suwayomi-Server-docker/actions/workflows/build_container_images.yml/badge.svg)](https://github.com/Suwayomi/Suwayomi-Server-docker/actions/workflows/build_container_images.yml) [![Docker Pulls](https://img.shields.io/badge/dynamic/json?url=https://github.com/Suwayomi/Suwayomi-Server-docker/raw/main/scripts/tachidesk_version.json&label=docker_pulls&query=$.total_downloads&color=blue)](https://github.com/orgs/suwayomi/packages/container/package/tachidesk) | [![Latest](https://img.shields.io/badge/dynamic/json?url=https://github.com/Suwayomi/Suwayomi-Server-docker/raw/main/scripts/tachidesk_version.json&label=version&query=$.stable&color=blue)](https://github.com/orgs/suwayomi/packages/container/package/tachidesk/) | [![Preview](https://img.shields.io/badge/dynamic/json?url=https://github.com/Suwayomi/Suwayomi-Server-docker/raw/main/scripts/tachidesk_version.json&label=version&query=$.preview&color=blue)](https://github.com/orgs/suwayomi/packages/container/package/tachidesk) | [![Discord](https://img.shields.io/discord/801021177333940224.svg?label=discord&labelColor=7289da&color=2c2f33&style=flat)](https://discord.gg/DDZdqZWaHA) |
+This is a fork of [Suwayomi-Server-Docker](https://github.com/Suwayomi/Suwayomi-Server-docker) to better leverage a podman environment instead of docker. 
 
-Run [Suwayomi-Server](https://github.com/Suwayomi/Suwayomi-Server) inside docker container as non-root user. The server will be running on http://localhost:4567 open this url in your browser.
+This project is not intended to replace its upstream equivalent, but merely a modification to better suit my needs, and might be useful to others.
 
-Docker Releases - https://github.com/Suwayomi/Suwayomi-Server-docker/pkgs/container/tachidesk
+### Podman kube play
 
-Dockerfile - https://github.com/Suwayomi/Suwayomi-Server-docker
-
-_**Suwayomi data location - /home/suwayomi/.local/share/Tachidesk**_
-
-Docker images are mutli-arch (linux/amd64, linux/arm64/v8, linux/ppc64le, linux/s390x, linux/riscv64) and has small size based on Ubuntu linux.
-
-Logs are sent to stdout and are not written to disk.
-
-### Docker compose
-
-Use the template [docker-compose.yml](./docker-compose.yml) in this repo for creating and starting tachidesk docker container.
+Use the template [pod.yml](./pod.yml) in this repo for creating and starting a tachidesk pod.
 
 # Environment Variables
 
@@ -70,20 +58,6 @@ There are a number of environment variables available to configure Suwayomi:
 |    **FLARESOLVERR_SESSION_NAME**     |       `suwayomi`        |                                                                   The name of the session that Suwayomi will use with FlareSolverr                                                                    |
 |     **FLARESOLVERR_SESSION_TTL**     |          `15`           |                                                                             The time to live for the FlareSolverr session                                                                             |
 
-### Downloads Folder
-We do not allow configuration of the downloads folder, since Docker Volumes can handle that instead, here is an example of a docker-compose.yaml that has downloads volume configuration:
-```yaml
-  tachidesk:
-    image: ghcr.io/suwayomi/suwayomi-server:stable
-    container_name: tachidesk
-    volumes: # The order matters! Make sure the downloads is first in the volume list or it will not work!
-      - /example/tachidesk/downloads:/home/suwayomi/.local/share/Tachidesk/downloads
-      - /example/tachidesk/files:/home/suwayomi/.local/share/Tachidesk
-    ports:
-      - 4568:4567
-    restart: unless-stopped
-```
-
 # Docker tags
 
 ## Latest
@@ -92,18 +66,11 @@ We do not allow configuration of the downloads folder, since Docker Volumes can 
 
 The latest stable release of the server. Also tagged as `:stable`.
 
-> [!CAUTION]
-> Currently the `ghcr.io/suwayomi/suwayomi-server` image does not contain the stable release, please use `ghcr.io/suwayomi/tachidesk` for now instead.
-
-## Preview
-
-`ghcr.io/suwayomi/suwayomi-server:preview`
-
-The latest preview release of the server. Can be buggy!
-
 # Credit
 
 [Suwayomi-Server](https://github.com/Suwayomi/Suwayomi-Server) is licensed under `MPL v. 2.0`.
+
+[Suwayomi-Server-Docker](https://github.com/Suwayomi/Suwayomi-Server-docker) is licensed under `MPL v. 2.0`.
 
 # License
 
