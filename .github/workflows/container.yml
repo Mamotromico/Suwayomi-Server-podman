@@ -9,7 +9,11 @@ jobs:
     permissions:
       packages: write
     runs-on: ubuntu-latest
-    steps:
+    steps:      
+      - name: Checkout repository
+        id: checkout
+        uses: actions/checkout@v4
+
       - name: Get latest release metadata
         id: get_latest_release_metadata
         run: |
@@ -24,10 +28,6 @@ jobs:
           echo "suwayomi_release_filename=$suwayomi_release_filename" >> $GITHUB_OUTPUT
           echo "suwayomi_git_commit=$suwayomi_git_commit" >> $GITHUB_OUTPUT
           echo "suwayomi_build_date=$suwayomi_build_date" >> $GITHUB_OUTPUT
-
-      - name: Checkout repository
-        id: checkout
-        uses: actions/checkout@v4
 
       - name: Build containerfile
         id: build_containerfile
