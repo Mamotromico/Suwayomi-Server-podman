@@ -5,13 +5,47 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-  publish:
+  build_publish:
     permissions:
       packages: write
-    needs: build
     runs-on: ubuntu-latest
+    steps:
+      - name: Get latest release metadata
+        id: get_latest_release_metadata
+        run: |
+          curl -s https://api.github.com/repos/suwayomi/Suwayomi-Server/releases/latest > ${{ runner.temp }}/latest_release.json
+          suwayomi_release_url=$(jq -r '.assets[] | select(.content_type == "application/java-archive") | .browser_download_url' ${{ runner.temp }}/latest_release.json)
+          suwayomi_release_tag=$(jq -r '.tag_name' ${{ runner.temp }}/latest_release.json)
+          suwayomi_release_filename=$(basename $suwayomi_release_url)
+          suwayomi_git_commit=$(git rev-list --count HEAD)
+          suwayomi_build_date=$(date "+%F")
+          echo "suwayomi_release_url=$suwayomi_release_url" >> $GITHUB_OUTPUT
+          echo "suwayomi_release_tag=$suwayomi_release_tag" >> $GITHUB_OUTPUT
+          echo "suwayomi_release_filename=$suwayomi_release_filename" >> $GITHUB_OUTPUT
+          echo "suwayomi_git_commit=$suwayomi_git_commit" >> $GITHUB_OUTPUT
+          echo "suwayomi_build_date=$suwayomi_build_date" >> $GITHUB_OUTPUT
+
+      - name: Checkout repository
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Build containerfile
+        id: build_containerfile
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: Suwayomi-Server
+          containerfiles: |
+            ./Containerfile
+          oci: true
+          tags: ${{steps.get_latest_release_metadata.outputs.suwayomi_release_tag}}. latest
+
+      - name: Push To ghcr
+        id: push_to_ghcr
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build_containerfile.outputs.image }}
+          tags: ${{ steps.build_containerfile.outputs.tags }}
+          registry: ghcr.io/${{ github.repository_owner }}
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      
