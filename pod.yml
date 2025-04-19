@@ -8,7 +8,7 @@ metadata:
 spec:
   containers:
     - name: suwayomi-container
-      image: ghcr.io/suwayomi/tachidesk:latest
+      image: ghcr.io/mamotromico/suwayomi-server:latest
       ports:
         - containerPort: 4567
           hostIP: 0.0.0.0
@@ -21,8 +21,13 @@ spec:
           cpu: 500m
           memory: 512Mi
       volumeMounts:
-        - mountPath: ~/swuayomi
+        - mountPath: /home/suwayomi
           name: suwayomi-directory
+        - mountPath: /home/suwayomi/downloads
+          name: suwayomi-downloads
+        - mountPath: /home/suwayomi/server.conf
+          name: suwayomi-config
+          subpath: server.conf
     - name: flaresolverr
       image: ghcr.io/thephaseless/byparr:latest
       env:
@@ -42,22 +47,23 @@ spec:
   volumes:
     - name: suwayomi-directory
       hostPath:
-        path: ./data # your host directory path
+        path: .test/data # your host directory path
         type: DirectoryOrCreate
-    - name: suwayomi-download
+    - name: suwayomi-downloads
       hostPath:
-        path: ./downloads
+        path: .test/downloads
         type: DirectoryOrCreate
     - name: suwayomi-config
       configMap:
         name: suwayomi-config
+  restartPolicy: Always
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: suwayomi-config
 data:
-  server.conf: | #properties
+  server.conf: |- #properties
     # Server ip and port bindings
     server.ip = "0.0.0.0"
     server.port = 4567
@@ -131,3 +137,4 @@ data:
     server.flareSolverrSessionTtl = 15 # time in minutes
     server.flareSolverrAsResponseFallback = false
 ---
+
