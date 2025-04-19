@@ -9,12 +9,10 @@ ARG GIT_COMMIT
 
 ADD $SUWAYOMI_RELEASE_DOWNLOAD_URL .
 
-RUN <<EOF
-    # Extract jar contents
-    mkdir ./unpacked
-    cd ./unpacked
-    unzip ../$SUWAYOMI_RELEASE_FILENAME
-    cd ..
+RUN mkdir ./unpacked &&\
+    cd ./unpacked &&\
+    unzip ../$SUWAYOMI_RELEASE_FILENAME &&\
+    cd .. &&\
     # Get dependencies
     $JAVA_HOME/bin/jdeps \
         --ignore-missing-deps \
@@ -24,7 +22,7 @@ RUN <<EOF
         --multi-release 17 \
         --class-path="./unpacked/BOOT-INF/lib/*" \
         --module-path="./unpacked/BOOT-INF/lib/*" \
-        ./$SUWAYOMI_RELEASE_FILENAME > ./deps.info
+        ./$SUWAYOMI_RELEASE_FILENAME > ./deps.info &&\
     # Create JRE for our specific dependencies
     $JAVA_HOME/bin/jlink \
         --verbose \
@@ -34,7 +32,7 @@ RUN <<EOF
         --no-header-files \
         --compress=2 \
         --output ~/suwa-jre-17
-EOF
+
 
 #Final image
 FROM alpine:latest

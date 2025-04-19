@@ -39,6 +39,7 @@ jobs:
           containerfiles: |
             ./Containerfile
           oci: true
+          layers: false
           tags: ${{steps.get_latest_release_metadata.outputs.suwayomi_release_tag}} latest
           build-args: | 
             SUWAYOMI_RELEASE_TAG=${{steps.get_latest_release_metadata.outputs.suwayomi_release_tag}}
