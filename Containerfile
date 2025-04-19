@@ -31,7 +31,7 @@ RUN mkdir ./unpacked &&\
         --no-man-pages \
         --no-header-files \
         --compress=2 \
-        --output ~/suwa-jre-17
+        --output /suwa-jre-17
 
 
 #Final image
@@ -54,7 +54,7 @@ suwayomi.download_url=$SUWAYOMI_RELEASE_DOWNLOAD_URL
 ENV JAVA_HOME=/opt/jdk/jdk-17
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
-COPY --from=jre-builder ~/suwa-jre-17 $JAVA_HOME
+COPY --from=jre-builder /suwa-jre-17 $JAVA_HOME
 
 EXPOSE 4567
-ENTRYPOINT java -jar "~/suwayomi/${SUWAYOMI_RELEASE_FILENAME}"
+ENTRYPOINT java -jar "/home/suwayomi/${SUWAYOMI_RELEASE_FILENAME}"
