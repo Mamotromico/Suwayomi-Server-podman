@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: Pod
 metadata:
@@ -6,61 +7,127 @@ metadata:
   name: suwayomi-pod
 spec:
   containers:
-    - env:
-        - name: TZ
-          value: Etc/UTC # Use TZ database name from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-        # Comment these out if you do not use the flaresolverr container at the bottom of this file
-        - name: FLARESOLVERR_ENABLED
-          value: "true"
-        - name: FLARESOLVERR_URL
-          value: http://localhost:8191
-  #  #################################################################################################
-  #
-  #    !!! IMPORTANT !!!
-  #     - server settings can be changed during runtime in the WebUI
-  #     - providing an environment variable will OVERWRITE the current setting value when starting the container
-  #
-  #  #################################################################################################
-  #
-  #    example for setting env vars:
-  #
-  #      - name: BIND_IP
-  #        value: 0.0.0.0
-  #      - name: BIND_PORT
-  #        value: 4567
-  #      - name: SOCKS_PROXY_ENABLED
-  #        value: "false"
-  #      - name: DOWNLOAD_AS_CBZ
-  #        value: "true"
-  #      - name: BASIC_AUTH_ENABLED
-  #        value: "true"
-  #      - name: BASIC_AUTH_USERNAME
-  #        value: manga
-  #      - name: BASIC_AUTH_PASSWORD
-  #        value: hello123
-  #      - name: EXTENSION_REPOS
-  #        value: '["http://github.com/orginazation-name/repo-name", "http://github.com/orginazation-name-2/repo-name-2"]'
-  #  #################################################################################################
+    - name: suwayomi-container
       image: ghcr.io/suwayomi/tachidesk:latest
-      name: suwayomi-container
       ports:
         - containerPort: 4567
           hostIP: 0.0.0.0
           hostPort: 4567
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
       volumeMounts:
-        - mountPath: /home/suwayomi/.local/share/Tachidesk
+        - mountPath: ~/swuayomi
           name: suwayomi-directory
-    - env:
+    - name: flaresolverr
+      image: ghcr.io/thephaseless/byparr:latest
+      env:
         - name: TZ
           value: America/Sao_Paulo
-      image: ghcr.io/thephaseless/byparr:latest
-      name: flaresolverr
       ports:
         - containerPort: 8191
           hostIP: 0.0.0.0
           hostPort: 8191
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          cpu: 100m
+          memory: 128Mi
   volumes:
-    - hostPath:
-        path: ./data
+    - name: suwayomi-directory
+      hostPath:
+        path: ./data # your host directory path
         type: DirectoryOrCreate
-      name: suwayomi-directory
+    - name: suwayomi-download
+      hostPath:
+        path: ./downloads
+        type: DirectoryOrCreate
+    - name: suwayomi-config
+      configMap:
+        name: suwayomi-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: suwayomi-config
+data:
+  server.conf: | #properties
+    # Server ip and port bindings
+    server.ip = "0.0.0.0"
+    server.port = 4567
+
+    # Socks5 proxy
+    server.socksProxyEnabled = false
+    server.socksProxyVersion = 5 # 4 or 5
+    server.socksProxyHost = ""
+    server.socksProxyPort = ""
+    server.socksProxyUsername = ""
+    server.socksProxyPassword = ""
+
+    # webUI
+    server.webUIEnabled = true
+    server.webUIFlavor = "WebUI" # "WebUI", "VUI" or "Custom"
+    server.initialOpenInBrowserEnabled = true
+    server.webUIInterface = "browser" # "browser" or "electron"
+    server.electronPath = ""
+    server.webUIChannel = "stable" # "bundled" (the version bundled with the server release), "stable" or "preview" - the webUI version that should be used
+    server.webUIUpdateCheckInterval = 23 # time in hours - 0 to disable auto update - range: 1 <= n < 24 - default 23 hours - how often the server should check for webUI updates
+
+    # downloader
+    server.downloadAsCbz = false
+    server.downloadsPath = ""
+    server.autoDownloadNewChapters = false # if new chapters that have been retrieved should get automatically downloaded
+    server.excludeEntryWithUnreadChapters = true # ignore automatic chapter downloads of entries with unread chapters
+    server.autoDownloadNewChaptersLimit = 0 # 0 to disable it - how many unread downloaded chapters should be available - if the limit is reached, new chapters won't be downloaded automatically. this limit will also be applied to the auto download of new chapters on an update
+    server.autoDownloadIgnoreReUploads = false # decides if re-uploads should be ignored during auto download of new chapters
+
+    # extension repos
+    server.extensionRepos = [
+      # an example: https://github.com/MY_ACCOUNT/MY_REPO/tree/repo
+    ]
+
+    # requests
+    server.maxSourcesInParallel = 6 # range: 1 <= n <= 20 - default: 6 - sets how many sources can do requests (updates, downloads) in parallel. updates/downloads are grouped by source and all mangas of a source are updated/downloaded synchronously
+
+    # updater
+    server.excludeUnreadChapters = true
+    server.excludeNotStarted = true
+    server.excludeCompleted = true
+    server.globalUpdateInterval = 12 # time in hours - 0 to disable it - (doesn't have to be full hours e.g. 12.5) - range: 6 <= n < ∞ - default: 12 hours - interval in which the global update will be automatically triggered
+    server.updateMangas = false # if the mangas should be updated along with the chapter list during a library/category update
+
+    # Authentication
+    server.basicAuthEnabled = false
+    server.basicAuthUsername = ""
+    server.basicAuthPassword = ""
+
+    # misc
+    server.debugLogsEnabled = false
+    server.systemTrayEnabled = true
+    server.maxLogFiles = 31 # the max number of days to keep files before they get deleted
+    server.maxLogFileSize = "10mb" # the max size of a log file - possible values: 1 (bytes), 1KB (kilobytes), 1MB (megabytes), 1GB (gigabytes)
+    server.maxLogFolderSize = "100mb" # the max size of all saved log files - possible values: 1 (bytes), 1KB (kilobytes), 1MB (megabytes), 1GB (gigabytes)
+
+    # backup
+    server.backupPath = ""
+    server.backupTime = "00:00" # range: hour: 0-23, minute: 0-59 - default: "00:00" - time of day at which the automated backup should be triggered
+    server.backupInterval = 1 # time in days - 0 to disable it - range: 1 <= n < ∞ - default: 1 day - interval in which the server will automatically create a backup
+    server.backupTTL = 14 # time in days - 0 to disable it - range: 1 <= n < ∞ - default: 14 days - how long backup files will be kept before they will get deleted
+
+    # local source
+    server.localSourcePath = ""
+
+    # Cloudflare bypass
+    server.flareSolverrEnabled = false
+    server.flareSolverrUrl = "http://localhost:8191"
+    server.flareSolverrTimeout = 60 # time in seconds
+    server.flareSolverrSessionName = "suwayomi"
+    server.flareSolverrSessionTtl = 15 # time in minutes
+    server.flareSolverrAsResponseFallback = false
+---

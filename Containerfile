@@ -1,69 +1,60 @@
-# Build slim JRE
-FROM eclipse-temurin:latest AS jre-builder
+# Build slim JRE for final image
+FROM eclipse-temurin:17-jdk-alpine AS jre-builder
 
 ARG BUILD_DATE
-ARG TACHIDESK_RELEASE_TAG
-ARG TACHIDESK_FILENAME
-ARG TACHIDESK_RELEASE_DOWNLOAD_URL
-ARG TACHIDESK_CONTAINER_GIT_COMMIT
+ARG SUWAYOMI_RELEASE_TAG
+ARG SUWAYOMI_FILENAME
+ARG SUWAYOMI_RELEASE_DOWNLOAD_URL
+ARG SUWAYOMI_CONTAINER_GIT_COMMIT
 
-RUN apk add --no-cache binutils
-
-RUN mkdir ./unpacked
-RUN cd ./unpacked
-RUN unzip ../$TACHIDESK_FILENAME
-RUN cd ..
-RUN $JAVA_HOME/bind/jdeps \
+RUN <<EOT
+# Extract jar contents
+mkdir ./unpacked
+cd ./unpacked
+unzip ../$SUWAYOMI_FILENAME
+cd ..
+# Get dependencies
+$JAVA_HOME/bind/jdeps \
     --ignore-missing-deps \
     --print-module-deps \
     -q \
     --recursive \
-    # --multi-release 17 \
+    --multi-release 17 \
     --class-path="./unpacked/BOOT-INF/lib/*" \
     --module-path="./unpacked/BOOT-INF/lib/*" \
-    ./$TACHIDESK_FILENAME > ./deps.info
-
-
-RUN $JAVA_HOME/bin/jlink \
+    ./$SUWAYOMI_FILENAME > ./deps.info
+# Create JRE for our specific dependencies
+$JAVA_HOME/bin/jlink \
     --verbose \
     --add-modules $(cat ./deps.info) \
     --strip-debug \
     --no-man-pages \
     --no-header-files \
     --compress=2 \
-    --output ./customjre
+    --output ~/suwa-jre-17
+EOT
 
-#Main image
+#Final image
 FROM alpine:latest
 
 LABEL org.opencontainers.image.title="Suwayomi Container" \
-      org.opencontainers.image.authors="https://github.com/mamotromico, https://github.com/suwayomi" \
-      org.opencontainers.image.url="https://github.com/Mamotromico/Suwayomi-Server-podman/pkgs/container/tachidesk, https://github.com/Mamotromico/Suwayomi-Server-podman/pkgs/container/tachidesk" \
-      org.opencontainers.image.source="https://github.com/Mamotromico/Suwayomi-Server-podman, https://github.com/Suwayomi/Suwayomi-Server-docker" \
-      org.opencontainers.image.description="This image is used to start suwayomi server in a container, modified for better compatibility with rootless pods on podman" \
-      org.opencontainers.image.vendor="mamotromico, suwayomi" \
-      org.opencontainers.image.created=$BUILD_DATE \
-      org.opencontainers.image.version=$TACHIDESK_RELEASE_TAG \
-      tachidesk.docker_commit=$TACHIDESK_DOCKER_GIT_COMMIT \
-      tachidesk.release_tag=$TACHIDESK_RELEASE_TAG \
-      tachidesk.filename=$TACHIDESK_FILENAME \
-      download_url=$TACHIDESK_RELEASE_DOWNLOAD_URL \
-      org.opencontainers.image.licenses="MPL-2.0"
+org.opencontainers.image.authors="https://github.com/mamotromico, https://github.com/suwayomi" \
+org.opencontainers.image.url="https://github.com/Mamotromico/Suwayomi-Server-podman/pkgs/container/swuayomi-server, https://github.com/Suwayomi/Suwayomi-Server-docker/pkgs/container/tachidesk" \
+org.opencontainers.image.source="https://github.com/Mamotromico/Suwayomi-Server-podman, https://github.com/Suwayomi/Suwayomi-Server-docker" \
+org.opencontainers.image.description="This image is used to start suwayomi server in a container, modified for better compatibility with rootless pods on podman" \
+org.opencontainers.image.vendor="mamotromico, suwayomi" \
+org.opencontainers.image.created=$BUILD_DATE \
+org.opencontainers.image.version=$SUWAYOMI_RELEASE_TAG \
+org.opencontainers.image.licenses="MPL-2.0"
+suwayomi.docker_commit=$SUWAYOMI_DOCKER_GIT_COMMIT \
+suwayomi.release_tag=$SUWAYOMI_RELEASE_TAG \
+suwayomi.filename=$SUWAYOMI_FILENAME \
+suwayomi.download_url=$SUWAYOMI_RELEASE_DOWNLOAD_URL \
 
-# install unzip to unzip the server-reference.conf from the jar
-RUN apk add unzip
+ENV JAVA_HOME=/opt/jdk/jdk-17
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
-# Create a user to run as
-RUN userdel -r ubuntu
-RUN mkdir -p ~/.local/share/Tachidesk
-RUK mkdir -p ~/startup
-
-# Copy the app into the container
-RUN curl -s --create-dirs -L $TACHIDESK_RELEASE_DOWNLOAD_URL -o ~/startup/$TACHIDESK_FILENAME
-COPY scripts/create_server_conf.sh ~/create_server_conf.sh
-COPY scripts/startup_script.sh ~/startup_script.sh
+COPY --from=jre-builder ~/suwa-jre-17 $JAVA_HOME
 
 EXPOSE 4567
-CMD ["~/startup_script.sh"]
-
-# vim: set ft=dockerfile:
+ENTRYPOINT java -jar "~/suwayomi/${SUWAYOMI_FILENAME}"
