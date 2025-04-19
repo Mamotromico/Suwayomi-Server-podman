@@ -7,6 +7,8 @@ ARG SUWAYOMI_RELEASE_DOWNLOAD_URL
 ARG BUILD_DATE
 ARG GIT_COMMIT
 
+ADD $SUWAYOMI_RELEASE_DOWNLOAD_URL .
+
 RUN <<EOF
     # Extract jar contents
     mkdir ./unpacked
@@ -14,7 +16,7 @@ RUN <<EOF
     unzip ../$SUWAYOMI_RELEASE_FILENAME
     cd ..
     # Get dependencies
-    $JAVA_HOME/bind/jdeps \
+    $JAVA_HOME/bin/jdeps \
         --ignore-missing-deps \
         --print-module-deps \
         -q \
