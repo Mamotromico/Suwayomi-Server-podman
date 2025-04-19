@@ -45,11 +45,11 @@ org.opencontainers.image.description="This image is used to start suwayomi serve
 org.opencontainers.image.vendor="mamotromico, suwayomi" \
 org.opencontainers.image.created=$BUILD_DATE \
 org.opencontainers.image.version=$SUWAYOMI_RELEASE_TAG \
-org.opencontainers.image.licenses="MPL-2.0"
+org.opencontainers.image.licenses="MPL-2.0" \
 suwayomi.docker_commit=$SUWAYOMI_DOCKER_GIT_COMMIT \
 suwayomi.release_tag=$SUWAYOMI_RELEASE_TAG \
 suwayomi.filename=$SUWAYOMI_RELEASE_FILENAME \
-suwayomi.download_url=$SUWAYOMI_RELEASE_DOWNLOAD_URL \
+suwayomi.download_url=$SUWAYOMI_RELEASE_DOWNLOAD_URL
 
 ENV JAVA_HOME=/opt/jdk/jdk-17
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
