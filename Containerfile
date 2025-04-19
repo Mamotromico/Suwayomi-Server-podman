@@ -7,32 +7,32 @@ ARG SUWAYOMI_RELEASE_DOWNLOAD_URL
 ARG BUILD_DATE
 ARG GIT_COMMIT
 
-RUN <<EOT
-# Extract jar contents
-mkdir ./unpacked
-cd ./unpacked
-unzip ../$SUWAYOMI_RELEASE_FILENAME
-cd ..
-# Get dependencies
-$JAVA_HOME/bind/jdeps \
-    --ignore-missing-deps \
-    --print-module-deps \
-    -q \
-    --recursive \
-    --multi-release 17 \
-    --class-path="./unpacked/BOOT-INF/lib/*" \
-    --module-path="./unpacked/BOOT-INF/lib/*" \
-    ./$SUWAYOMI_RELEASE_FILENAME > ./deps.info
-# Create JRE for our specific dependencies
-$JAVA_HOME/bin/jlink \
-    --verbose \
-    --add-modules $(cat ./deps.info) \
-    --strip-debug \
-    --no-man-pages \
-    --no-header-files \
-    --compress=2 \
-    --output ~/suwa-jre-17
-EOT
+RUN <<EOF
+    # Extract jar contents
+    mkdir ./unpacked
+    cd ./unpacked
+    unzip ../$SUWAYOMI_RELEASE_FILENAME
+    cd ..
+    # Get dependencies
+    $JAVA_HOME/bind/jdeps \
+        --ignore-missing-deps \
+        --print-module-deps \
+        -q \
+        --recursive \
+        --multi-release 17 \
+        --class-path="./unpacked/BOOT-INF/lib/*" \
+        --module-path="./unpacked/BOOT-INF/lib/*" \
+        ./$SUWAYOMI_RELEASE_FILENAME > ./deps.info
+    # Create JRE for our specific dependencies
+    $JAVA_HOME/bin/jlink \
+        --verbose \
+        --add-modules $(cat ./deps.info) \
+        --strip-debug \
+        --no-man-pages \
+        --no-header-files \
+        --compress=2 \
+        --output ~/suwa-jre-17
+EOF
 
 #Final image
 FROM alpine:latest

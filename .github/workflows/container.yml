@@ -35,7 +35,7 @@ jobs:
         id: build_containerfile
         uses: redhat-actions/buildah-build@v2
         with:
-          image: Suwayomi-Server
+          image: suwayomi-server
           containerfiles: |
             ./Containerfile
           oci: true
