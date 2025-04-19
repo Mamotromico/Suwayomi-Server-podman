@@ -1,17 +1,17 @@
 # Build slim JRE for final image
 FROM eclipse-temurin:17-jdk-alpine AS jre-builder
 
-ARG BUILD_DATE
 ARG SUWAYOMI_RELEASE_TAG
-ARG SUWAYOMI_FILENAME
+ARG SUWAYOMI_RELEASE_FILENAME
 ARG SUWAYOMI_RELEASE_DOWNLOAD_URL
-ARG SUWAYOMI_CONTAINER_GIT_COMMIT
+ARG BUILD_DATE
+ARG GIT_COMMIT
 
 RUN <<EOT
 # Extract jar contents
 mkdir ./unpacked
 cd ./unpacked
-unzip ../$SUWAYOMI_FILENAME
+unzip ../$SUWAYOMI_RELEASE_FILENAME
 cd ..
 # Get dependencies
 $JAVA_HOME/bind/jdeps \
@@ -22,7 +22,7 @@ $JAVA_HOME/bind/jdeps \
     --multi-release 17 \
     --class-path="./unpacked/BOOT-INF/lib/*" \
     --module-path="./unpacked/BOOT-INF/lib/*" \
-    ./$SUWAYOMI_FILENAME > ./deps.info
+    ./$SUWAYOMI_RELEASE_FILENAME > ./deps.info
 # Create JRE for our specific dependencies
 $JAVA_HOME/bin/jlink \
     --verbose \
@@ -48,7 +48,7 @@ org.opencontainers.image.version=$SUWAYOMI_RELEASE_TAG \
 org.opencontainers.image.licenses="MPL-2.0"
 suwayomi.docker_commit=$SUWAYOMI_DOCKER_GIT_COMMIT \
 suwayomi.release_tag=$SUWAYOMI_RELEASE_TAG \
-suwayomi.filename=$SUWAYOMI_FILENAME \
+suwayomi.filename=$SUWAYOMI_RELEASE_FILENAME \
 suwayomi.download_url=$SUWAYOMI_RELEASE_DOWNLOAD_URL \
 
 ENV JAVA_HOME=/opt/jdk/jdk-17
@@ -57,4 +57,4 @@ ENV PATH="${JAVA_HOME}/bin:${PATH}"
 COPY --from=jre-builder ~/suwa-jre-17 $JAVA_HOME
 
 EXPOSE 4567
-ENTRYPOINT java -jar "~/suwayomi/${SUWAYOMI_FILENAME}"
+ENTRYPOINT java -jar "~/suwayomi/${SUWAYOMI_RELEASE_FILENAME}"

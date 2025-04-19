@@ -23,13 +23,13 @@ jobs:
           suwayomi_release_url=$(jq -r '.assets[] | select(.content_type == "application/java-archive") | .browser_download_url' ${{ runner.temp }}/latest_release.json)
           suwayomi_release_tag=$(jq -r '.tag_name' ${{ runner.temp }}/latest_release.json)
           suwayomi_release_filename=$(basename $suwayomi_release_url)
-          suwayomi_git_commit=$(git rev-list --count HEAD)
-          suwayomi_build_date=$(date "+%F")
+          git_commit=$(git rev-list --count HEAD)
+          build_date=$(date "+%F")
           echo "suwayomi_release_url=$suwayomi_release_url" >> $GITHUB_OUTPUT
           echo "suwayomi_release_tag=$suwayomi_release_tag" >> $GITHUB_OUTPUT
           echo "suwayomi_release_filename=$suwayomi_release_filename" >> $GITHUB_OUTPUT
-          echo "suwayomi_git_commit=$suwayomi_git_commit" >> $GITHUB_OUTPUT
-          echo "suwayomi_build_date=$suwayomi_build_date" >> $GITHUB_OUTPUT
+          echo "git_commit=$git_commit" >> $GITHUB_OUTPUT
+          echo "build_date=$build_date" >> $GITHUB_OUTPUT
 
       - name: Build containerfile
         id: build_containerfile
@@ -39,7 +39,13 @@ jobs:
           containerfiles: |
             ./Containerfile
           oci: true
-          tags: ${{steps.get_latest_release_metadata.outputs.suwayomi_release_tag}}. latest
+          tags: ${{steps.get_latest_release_metadata.outputs.suwayomi_release_tag}} latest
+          build-args: | 
+            SUWAYOMI_RELEASE_TAG=${{steps.get_latest_release_metadata.outputs.suwayomi_release_tag}}
+            SUWAYOMI_RELEASE_FILENAME=${{steps.get_latest_release_metadata.outputs.suwayomi_release_filename}}
+            SUWAYOMI_RELEASE_DOWNLOAD_URL=${{steps.get_latest_release_metadata.outputs.suwayomi_release_url}}
+            BUILD_DATE=${{steps.get_latest_release_metadata.outputs.build_date}}
+            GIT_COMMIT=${{steps.get_latest_release_metadata.outputs.git_commit}}
 
       - name: Push To ghcr
         id: push_to_ghcr
