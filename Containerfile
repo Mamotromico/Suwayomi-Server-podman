@@ -7,11 +7,11 @@ ARG SUWAYOMI_RELEASE_DOWNLOAD_URL
 ARG BUILD_DATE
 ARG GIT_COMMIT
 
-ADD $SUWAYOMI_RELEASE_DOWNLOAD_URL .
+ADD $SUWAYOMI_RELEASE_DOWNLOAD_URL /$SUWAYOMI_RELEASE_FILENAME
 
 RUN mkdir ./unpacked &&\
     cd ./unpacked &&\
-    unzip ../$SUWAYOMI_RELEASE_FILENAME &&\
+    unzip /$SUWAYOMI_RELEASE_FILENAME &&\
     cd .. &&\
     # Get dependencies
     $JAVA_HOME/bin/jdeps \
@@ -22,7 +22,7 @@ RUN mkdir ./unpacked &&\
         --multi-release 17 \
         --class-path="./unpacked/BOOT-INF/lib/*" \
         --module-path="./unpacked/BOOT-INF/lib/*" \
-        ./$SUWAYOMI_RELEASE_FILENAME >./deps.info &&\
+        /$SUWAYOMI_RELEASE_FILENAME >./deps.info &&\
     # Create JRE for our specific dependencies
     $JAVA_HOME/bin/jlink \
         --verbose \
