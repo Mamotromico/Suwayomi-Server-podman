@@ -1,5 +1,5 @@
 # Build slim JRE for final image
-FROM eclipse-temurin:17-jdk-alpine AS jre-builder
+FROM docker.io/eclipse-temurin:17-jdk-alpine AS jre-builder
 
 ARG SUWAYOMI_RELEASE_TAG
 ARG SUWAYOMI_RELEASE_FILENAME
@@ -34,7 +34,7 @@ RUN mkdir ./unpacked &&\
         --output /suwa-jre-17
 
 #Final image
-FROM alpine:3.21.3
+FROM docker.io/alpine:3.21.3
 
 LABEL org.opencontainers.image.title="Suwayomi Container" \
     org.opencontainers.image.authors="https://github.com/mamotromico, https://github.com/suwayomi" \
