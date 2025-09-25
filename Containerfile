@@ -53,7 +53,7 @@ ENV JAVA_HOME=/opt/jdk/jdk-17
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
 COPY --from=jre-builder /suwa-jre-17 $JAVA_HOME
-COPY --from=jre-builder /$SUWAYOMI_RELEASE_FILENAME /home/suwayomi/suwayomi.jar
+COPY --from=jre-builder /$SUWAYOMI_RELEASE_FILENAME /root/suwayomi.jar
 
 EXPOSE 4567
-ENTRYPOINT java -jar /home/suwayomi/suwayomi.jar
+ENTRYPOINT java -jar /root/suwayomi.jar
