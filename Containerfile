@@ -52,10 +52,9 @@ LABEL org.opencontainers.image.title="Suwayomi Container" \
 
 ENV JAVA_HOME=/opt/jdk/jdk-17
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
-ENV SUWAYOMI_RELEASE_FILENAME=$SUWAYOMI_RELEASE_FILENAME
 
 COPY --from=jre-builder /suwa-jre-17 $JAVA_HOME
-COPY --from=jre-builder /$SUWAYOMI_RELEASE_FILENAME /home/suwayomi
+COPY --from=jre-builder /$SUWAYOMI_RELEASE_FILENAME /home/suwayomi/suwayomi.jar
 
 EXPOSE 4567
-CMD ["java", "-jar", "/home/suwayomi/$SUWAYOMI_RELEASE_FILENAME"]
+ENTRYPOINT java -jar /home/suwayomi/suwayomi.jar
