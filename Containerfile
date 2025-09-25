@@ -25,7 +25,6 @@ RUN mkdir ./unpacked &&\
         /$SUWAYOMI_RELEASE_FILENAME >./deps.info &&\
     # Create JRE for our specific dependencies
     $JAVA_HOME/bin/jlink \
-        --verbose \
         --add-modules $(cat ./deps.info) \
         --strip-debug \
         --no-man-pages \
