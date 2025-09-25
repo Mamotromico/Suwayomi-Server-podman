@@ -58,4 +58,4 @@ COPY --from=jre-builder /suwa-jre-17 $JAVA_HOME
 COPY --from=jre-builder /$SUWAYOMI_RELEASE_FILENAME /home/suwayomi
 
 EXPOSE 4567
-CMD ["java", "-jar", "/home/suwayomi/${SUWAYOMI_RELEASE_FILENAME}"]
+CMD ["java", "-jar", "/home/suwayomi/$SUWAYOMI_RELEASE_FILENAME"]
