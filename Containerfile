@@ -65,6 +65,7 @@ RUN chmod +rx /usr/local/bin/tini &&\
     chmod +rx /usr/local/bin/suwayomi.sh &&\
     chmod +rx /usr/local/bin/suwayomi.jar &&\
     chmod 777 /suwayomi
+# The /suwayomi directory permissions can probably be more restrictive. Needs more testing
 
 EXPOSE 4567
 ENTRYPOINT ["tini", "--"]
