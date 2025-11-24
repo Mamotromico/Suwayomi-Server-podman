@@ -1,12 +1,8 @@
 # Build slim JRE for final image
-FROM docker.io/eclipse-temurin:24-jdk-ubi10-minimal AS jre-builder
+FROM docker.io/eclipse-temurin:25-jdk-ubi10-minimal AS jre-builder
 
-ARG SUWAYOMI_RELEASE_TAG
 ARG SUWAYOMI_RELEASE_FILENAME
 ARG SUWAYOMI_RELEASE_DOWNLOAD_URL
-ARG BUILD_DATE
-ARG GIT_COMMIT
-ARG TINI_RELEASE_TAG
 
 ADD $SUWAYOMI_RELEASE_DOWNLOAD_URL /$SUWAYOMI_RELEASE_FILENAME
 
@@ -32,7 +28,7 @@ RUN $JAVA_HOME/bin/jlink \
         --output /suwa-jre-17
 
 #Final image
-FROM docker.io/redhat/ubi10-minimal:10.0
+FROM registry.access.redhat.com/ubi10/ubi-minimal:10.1
 
 ARG SUWAYOMI_RELEASE_TAG
 ARG SUWAYOMI_RELEASE_FILENAME
@@ -65,8 +61,8 @@ ENV PATH="${JAVA_HOME}bin:${PATH}"
 COPY --from=jre-builder /suwa-jre-17/ $JAVA_HOME
 COPY --from=jre-builder /$SUWAYOMI_RELEASE_FILENAME /usr/local/bin/suwayomi.jar
 COPY ./suwayomi.sh /usr/local/bin/suwayomi.sh
-RUN chmod +x /usr/local/bin/tini && \
-    chmod +x /usr/local/bin/suwayomi.sh
+RUN chmod +x /usr/local/bin/tini &&\
+    chmod +x /usr/local/bin/suwayomi.sh &&\
 
 EXPOSE 4567
 ENTRYPOINT ["tini", "--"]
