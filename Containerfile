@@ -69,4 +69,4 @@ COPY ./suwayomi.sh suwayomi.sh
 
 EXPOSE 4567
 ENTRYPOINT ["tini", "--"]
-CMD ["suwayomi.sh"]
+CMD ["/suwayomi/suwayomi.sh"]
