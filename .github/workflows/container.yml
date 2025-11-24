@@ -10,10 +10,13 @@ jobs:
       packages: write
     runs-on: ubuntu-latest
     steps:
+      - name: downcase entries
+        run: USERNAME=${GITHUB_REPOSITORY@L} >> ${GITHUB_ENV}
+
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ github.repository_owner }}
+          username: ${{ env.USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
     
       - name: Checkout repository
