@@ -60,7 +60,7 @@ jobs:
             SUWAYOMI_RELEASE_DOWNLOAD_URL=${{steps.get_latest_suwayomi_release_metadata.outputs.suwayomi_release_url}}
             BUILD_DATE=${{steps.get_latest_suwayomi_release_metadata.outputs.build_date}}
             GIT_COMMIT=${{steps.get_latest_suwayomi_release_metadata.outputs.git_commit}}
-            TINI_RELEASE_VERSION=${{steps.get_latest_tini_release_metadata.outputs.tini_release_tag}}
+            TINI_RELEASE_TAG=${{steps.get_latest_tini_release_metadata.outputs.tini_release_tag}}
 
       - name: Push To ghcr
         id: push_to_ghcr
