@@ -68,5 +68,5 @@ COPY --from=jre-builder /$SUWAYOMI_RELEASE_FILENAME suwayomi.jar
 COPY ./suwayomi.sh suwayomi.sh
 
 EXPOSE 4567
-ENTRYPOINT tini --
-CMD suwayomi.sh
+ENTRYPOINT ["tini", "--"]
+CMD ["suwayomi.sh"]
