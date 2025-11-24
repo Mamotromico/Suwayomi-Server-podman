@@ -27,13 +27,13 @@ _**Suwayomi data location - /suwayomi**_
 
 This image is based on [Red Hat's Minimal Universal Base Image 10](https://hub.docker.com/r/redhat/ubi10-minimal)
 
-# Environment Variables
+## Environment Variables
 
 Currently the only environment variable used by this setup is:
 
-|                Variable                |             Server Default             |                                                                                                                              Description                                                                                                                              |
-|:--------------------------------------:|:--------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-|                 **TZ**                 |               `Etc/UTC`                |                                                                                                              What time zone the container thinks it is.                                                                                                               |                                                                                                          |
+|Variable|Server Default|Description|
+|:-:|:-:|:-:|
+|**TZ**|`Etc/UTC`|What time zone the container thinks it is.|
 
 Instead of using environment variables, this setup leverages the support that podman has for k8s ConfigMaps, and have our server.conf be a mounted config map so that the server settings are static and defined by the yaml file.
 
@@ -67,7 +67,8 @@ data:
 > [!NOTE]
 > See the [Suwayomi wiki page on configuration](https://github.com/Suwayomi/Suwayomi-Server/wiki/Configuring-Suwayomi%E2%80%90Server) in the [Suwayomi-Server](https://github.com/Suwayomi/Suwayomi-Server) repository for the default values and explanation
 
-### Downloads Folder
+## Downloads Folder
+
 If you want to use different download folder, you can set that through either `volumeMounts` or the server.conf configMap. Remember that if you change the `server.downloadsPath` value and want the downloads to be persisted, you need to map the same directory on your volumeMounts definitions.
 
 ```yaml
@@ -95,14 +96,16 @@ If you want to use different download folder, you can set that through either `v
     ...
 ```
 
-# Credit
+## Credit
 
 [Suwayomi-Server](https://github.com/Suwayomi/Suwayomi-Server) is licensed under `MPL v. 2.0`.
 
 [Suwayomi-Server-Docker](https://github.com/Suwayomi/Suwayomi-Server-docker) is licensed under `MPL v. 2.0`.
 
-# License
+## License
 
-    This Source Code Form is subject to the terms of the Mozilla Public
-    License, v. 2.0. If a copy of the MPL was not distributed with this
-    file, You can obtain one at http://mozilla.org/MPL/2.0/.
+```text
+  This Source Code Form is subject to the terms of the Mozilla Public
+  License, v. 2.0. If a copy of the MPL was not distributed with this
+  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+```
