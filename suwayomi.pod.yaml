@@ -2,33 +2,44 @@
 apiVersion: v1
 kind: Pod
 metadata:
+  annotations:
+    io.podman.annotations.infra.name: suwayomi-infra
   labels:
     app: suwayomi
-  name: suwayomi-pod
+  name: suwayomi
 spec:
   containers:
-    - name: suwayomi-container
+    - name: container
       env:
         - name: TZ
           value: America/Sao_Paulo
       image: ghcr.io/mamotromico/suwayomi-server:latest
       ports:
         - containerPort: 4567
-          hostIP: 0.0.0.0
           hostPort: 4567
-      volumeMounts:
-        - mountPath: /suwayomi
-          name: suwayomi-directory
+          protocol: tcp
+      volumeMounts:        
         # - mountPath: /suwayomi/downloads
         #   name: suwayomi-downloads
         # - mountPath: /suwayomi/backups
         #   name: suwayomi-backups
         # - mountPath: /suwayomi/logs
         #   name: suwayomi-logs
+        - mountPath: /suwayomi
+          name: suwayomi-directory
         - mountPath: /suwayomi/server.conf
           name: suwayomi-config-file
-          subPath: server.conf              
+          subPath: server.conf
+          readOnly: true
+      securityContext:
+        allowPrivilegeEscalation: false
+        runAsNonRoot: true
+        runAsUser: 1000 # Replaces usual PUID configurations
+        runAsGroup: 1000 # Replaces usual PGID configurations        
   volumes:
+    - name: suwayomi-config-file
+      configMap:
+        name: suwayomi-config 
     - name: suwayomi-directory
       hostPath:
         path:  # your host directory path
@@ -44,10 +55,7 @@ spec:
     # - name: suwayomi-logs
     #   hostPath:
     #     path: 
-    #     type: DirectoryOrCreate
-    - name: suwayomi-config-file
-      configMap:
-        name: suwayomi-config      
+    #     type: DirectoryOrCreate  
   restartPolicy: Always
 ---
 apiVersion: v1
@@ -69,7 +77,7 @@ data:
     server.socksProxyPassword = ""
 
     # webUI
-    server.webUIEnabled = true
+    server.webUIEnabled = false
     server.initialOpenInBrowserEnabled = false
     server.webUIInterface = "browser" # "browser" or "electron"
     server.electronPath = ""
@@ -78,18 +86,13 @@ data:
     server.webUIUpdateCheckInterval = 23
 
     # downloader
-    server.downloadAsCbz = true
+    server.downloadAsCbz = false
     server.downloadsPath = ""
-    server.autoDownloadNewChapters = true
+    server.autoDownloadNewChapters = false
     server.excludeEntryWithUnreadChapters = true
     server.autoDownloadNewChaptersLimit = 0
     server.autoDownloadIgnoreReUploads = false
-    server.downloadConversions = {
-      "default" : {
-          target : "image/webp"
-        }
-      }
-    }
+    server.downloadConversions = {}
 
     # updater
     server.excludeUnreadChapters = true
@@ -102,7 +105,7 @@ data:
     server.authMode = "none" # none, basic_auth, simple_login or ui_login
     server.authUsername = "user"
     server.authPassword = "pass"
-    server.jwtAudience = "mamo-suwayomi"
+    server.jwtAudience = "suwayomi-server-api"
     server.jwtTokenExpiry = "5m"
     server.jwtRefreshExpiry = "60d"
 
