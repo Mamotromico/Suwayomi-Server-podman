@@ -6,6 +6,7 @@ ARG SUWAYOMI_RELEASE_FILENAME
 ARG SUWAYOMI_RELEASE_DOWNLOAD_URL
 ARG BUILD_DATE
 ARG GIT_COMMIT
+ARG TINI_RELEASE_TAG
 
 ADD $SUWAYOMI_RELEASE_DOWNLOAD_URL /$SUWAYOMI_RELEASE_FILENAME
 
@@ -23,13 +24,12 @@ RUN $JAVA_HOME/bin/jdeps \
         --module-path="./unpacked/BOOT-INF/lib/*" \
         /$SUWAYOMI_RELEASE_FILENAME >./deps.info
 RUN $JAVA_HOME/bin/jlink \
-        --add-modules $(cat ./deps.info) \
+        --add-modules $(cat ./deps.info),jdk.zipfs \
         --strip-debug \
         --no-man-pages \
         --no-header-files \
         --compress=2 \
         --output /suwa-jre-17
-RUN ls -l
 
 #Final image
 FROM docker.io/redhat/ubi10-minimal:10.0
@@ -39,6 +39,12 @@ ARG SUWAYOMI_RELEASE_FILENAME
 ARG SUWAYOMI_RELEASE_DOWNLOAD_URL
 ARG BUILD_DATE
 ARG GIT_COMMIT
+ARG TINI_RELEASE_TAG
+
+ADD https://github.com/krallin/tini/releases/download/${TINI_RELEASE_TAG}/tini /usr/local/bin/tini
+RUN chmod +x /usr/local/bin/tini
+
+WORKDIR /suwayomi
 
 LABEL org.opencontainers.image.title="Suwayomi Container" \
     org.opencontainers.image.authors="https://github.com/mamotromico, https://github.com/suwayomi" \
@@ -58,7 +64,9 @@ ENV JAVA_HOME=/opt/jdk/jdk-17/
 ENV PATH="${JAVA_HOME}bin:${PATH}"
 
 COPY --from=jre-builder /suwa-jre-17/ $JAVA_HOME
-COPY --from=jre-builder /$SUWAYOMI_RELEASE_FILENAME /home/suwayomi/suwayomi.jar
+COPY --from=jre-builder /$SUWAYOMI_RELEASE_FILENAME suwayomi.jar
+COPY ./suwayomi.sh suwayomi.sh
 
 EXPOSE 4567
-ENTRYPOINT ["java", "-Duser.home=/home/suwayomi", "-jar", "/home/suwayomi/suwayomi.jar"]
+ENTRYPOINT tini --
+CMD suwayomi.sh

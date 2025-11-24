@@ -8,54 +8,46 @@ metadata:
 spec:
   containers:
     - name: suwayomi-container
+      env:
+        - name: TZ
+          value: America/Sao_Paulo
       image: ghcr.io/mamotromico/suwayomi-server:latest
       ports:
         - containerPort: 4567
           hostIP: 0.0.0.0
           hostPort: 4567
-      resources:
-        requests:
-          cpu: 50m
-          memory: 64Mi
-        limits:
-          cpu: 500m
-          memory: 512Mi
       volumeMounts:
-        - mountPath: /home/suwayomi
+        - mountPath: /suwayomi
           name: suwayomi-directory
-        - mountPath: /home/suwayomi/downloads
-          name: suwayomi-downloads
-        - mountPath: /home/suwayomi/server.conf
-          name: suwayomi-config
-          subpath: server.conf
-    - name: flaresolverr
-      image: ghcr.io/thephaseless/byparr:latest
-      env:
-        - name: TZ
-          value: America/Sao_Paulo
-      ports:
-        - containerPort: 8191
-          hostIP: 0.0.0.0
-          hostPort: 8191
-      resources:
-        requests:
-          cpu: 50m
-          memory: 64Mi
-        limits:
-          cpu: 100m
-          memory: 128Mi
+        # - mountPath: /suwayomi/downloads
+        #   name: suwayomi-downloads
+        # - mountPath: /suwayomi/backups
+        #   name: suwayomi-backups
+        # - mountPath: /suwayomi/logs
+        #   name: suwayomi-logs
+        - mountPath: /suwayomi/server.conf
+          name: suwayomi-config-file
+          subpath: server.conf              
   volumes:
     - name: suwayomi-directory
       hostPath:
-        path: .test/data # your host directory path
+        path:  # your host directory path
         type: DirectoryOrCreate
-    - name: suwayomi-downloads
-      hostPath:
-        path: .test/downloads
-        type: DirectoryOrCreate
-    - name: suwayomi-config
+    # - name: suwayomi-downloads
+    #   hostPath:
+    #     path: 
+    #     type: DirectoryOrCreate
+    # - name: suwayomi-backups
+    #   hostPath:
+    #     path: 
+    #     type: DirectoryOrCreate
+    # - name: suwayomi-logs
+    #   hostPath:
+    #     path: 
+    #     type: DirectoryOrCreate
+    - name: suwayomi-config-file
       configMap:
-        name: suwayomi-config
+        name: suwayomi-config      
   restartPolicy: Always
 ---
 apiVersion: v1
@@ -78,40 +70,45 @@ data:
 
     # webUI
     server.webUIEnabled = true
-    server.initialOpenInBrowserEnabled = true
+    server.initialOpenInBrowserEnabled = false
     server.webUIInterface = "browser" # "browser" or "electron"
     server.electronPath = ""
     server.webUIFlavor = "WebUI" # "WebUI" or "Custom"
-    server.webUIChannel = preview # "BUNDLED" or "STABLE" or "PREVIEW"
+    server.webUIChannel = STABLE # "BUNDLED" or "STABLE" or "PREVIEW"
     server.webUIUpdateCheckInterval = 23
 
     # downloader
     server.downloadAsCbz = true
     server.downloadsPath = ""
-    server.autoDownloadNewChapters = false
+    server.autoDownloadNewChapters = true
     server.excludeEntryWithUnreadChapters = true
     server.autoDownloadNewChaptersLimit = 0
     server.autoDownloadIgnoreReUploads = false
-    server.downloadConversions = {}
+    server.downloadConversions = {
+      "default" : {
+          target : "image/webp"
+        }
+      }
+    }
 
     # updater
     server.excludeUnreadChapters = true
     server.excludeNotStarted = true
     server.excludeCompleted = true
     server.globalUpdateInterval = 12
-    server.updateMangas = false
+    server.updateMangas = true
 
     # Authentication
     server.authMode = "none" # none, basic_auth, simple_login or ui_login
     server.authUsername = "user"
     server.authPassword = "pass"
-    server.jwtAudience = "suwayomi-server-api"
+    server.jwtAudience = "mamo-suwayomi"
     server.jwtTokenExpiry = "5m"
     server.jwtRefreshExpiry = "60d"
 
     # misc
     server.debugLogsEnabled = false
-    server.systemTrayEnabled = true
+    server.systemTrayEnabled = false
     server.maxLogFiles = 31
     server.maxLogFileSize = "10mb"
     server.maxLogFolderSize = "100mb"
@@ -143,6 +140,7 @@ data:
     server.opdsShowOnlyUnreadChapters = false
     server.opdsShowOnlyDownloadedChapters = false
     server.opdsChapterSortOrder = "DESC"
+    server.opdsCbzMimetype = "MODERN"
 
     #KoReader sync
     server.koreaderSyncServerUrl = "http://localhost:17200"
@@ -159,5 +157,5 @@ data:
     server.databaseUrl = "postgresql://localhost:5432/suwayomi"
     server.databaseUsername = ""
     server.databasePassword = ""
+    server.useHikariConnectionPool = true
 ---
-

@@ -22,12 +22,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get latest release metadata
-        id: get_latest_release_metadata
+      - name: Get latest suwayomi release metadata
+        id: get_latest_suwayomi_release_metadata
         run: |
-          curl -s https://api.github.com/repos/suwayomi/suwayomi-server/releases/latest > ${{ runner.temp }}/latest_release.json
-          suwayomi_release_url=$(jq -r '.assets[] | select(.content_type == "application/java-archive") | .browser_download_url' ${{ runner.temp }}/latest_release.json)
-          suwayomi_release_tag=$(jq -r '.tag_name' ${{ runner.temp }}/latest_release.json)
+          curl -s https://api.github.com/repos/suwayomi/suwayomi-server/releases/latest > ${{ runner.temp }}/latest_suwayomi_release.json
+          suwayomi_release_url=$(jq -r '.assets[] | select(.content_type == "application/java-archive") | .browser_download_url' ${{ runner.temp }}/latest_suwayomi_release.json)
+          suwayomi_release_tag=$(jq -r '.tag_name' ${{ runner.temp }}/latest_suwayomi_release.json)
           suwayomi_release_filename=$(basename $suwayomi_release_url)
           git_commit=$(git rev-list --count HEAD)
           build_date=$(date "+%F")
@@ -36,6 +36,13 @@ jobs:
           echo "suwayomi_release_filename=$suwayomi_release_filename" >> $GITHUB_OUTPUT
           echo "git_commit=$git_commit" >> $GITHUB_OUTPUT
           echo "build_date=$build_date" >> $GITHUB_OUTPUT
+
+      - name: Get latest tini release metadata
+        id: get_latest_tini_release_metadata
+        run: |
+          curl -s https://api.github.com/repos/krallin/tini/releases/latest > ${{ runner.temp }}/latest_tini_release.json
+          tini_release_tag=$(jq -r '.tag_name' ${{ runner.temp }}/latest_tini_release.json)
+          echo "tini_release_tag=$tini_release_tag" >> $GITHUB_OUTPUT
 
       - name: Build containerfile
         id: build_containerfile
@@ -46,13 +53,14 @@ jobs:
             ./Containerfile
           oci: true
           layers: false
-          tags: ${{steps.get_latest_release_metadata.outputs.suwayomi_release_tag}} latest
+          tags: ${{steps.get_latest_suwayomi_release_metadata.outputs.suwayomi_release_tag}} latest
           build-args: | 
-            SUWAYOMI_RELEASE_TAG=${{steps.get_latest_release_metadata.outputs.suwayomi_release_tag}}
-            SUWAYOMI_RELEASE_FILENAME=${{steps.get_latest_release_metadata.outputs.suwayomi_release_filename}}
-            SUWAYOMI_RELEASE_DOWNLOAD_URL=${{steps.get_latest_release_metadata.outputs.suwayomi_release_url}}
-            BUILD_DATE=${{steps.get_latest_release_metadata.outputs.build_date}}
-            GIT_COMMIT=${{steps.get_latest_release_metadata.outputs.git_commit}}
+            SUWAYOMI_RELEASE_TAG=${{steps.get_latest_suwayomi_release_metadata.outputs.suwayomi_release_tag}}
+            SUWAYOMI_RELEASE_FILENAME=${{steps.get_latest_suwayomi_release_metadata.outputs.suwayomi_release_filename}}
+            SUWAYOMI_RELEASE_DOWNLOAD_URL=${{steps.get_latest_suwayomi_release_metadata.outputs.suwayomi_release_url}}
+            BUILD_DATE=${{steps.get_latest_suwayomi_release_metadata.outputs.build_date}}
+            GIT_COMMIT=${{steps.get_latest_suwayomi_release_metadata.outputs.git_commit}}
+            TINI_RELEASE_VERSION=${{steps.get_latest_tini_release_metadata.outputs.tini_release_tag}}
 
       - name: Push To ghcr
         id: push_to_ghcr
