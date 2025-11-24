@@ -42,7 +42,6 @@ ARG GIT_COMMIT
 ARG TINI_RELEASE_TAG
 
 ADD https://github.com/krallin/tini/releases/download/${TINI_RELEASE_TAG}/tini /usr/local/bin/tini
-RUN chmod +x /usr/local/bin/tini
 
 WORKDIR /suwayomi
 
@@ -66,6 +65,8 @@ ENV PATH="${JAVA_HOME}bin:${PATH}"
 COPY --from=jre-builder /suwa-jre-17/ $JAVA_HOME
 COPY --from=jre-builder /$SUWAYOMI_RELEASE_FILENAME suwayomi.jar
 COPY ./suwayomi.sh /suwayomi/suwayomi.sh
+RUN chmod +x /usr/local/bin/tini && \
+    chmod +x /suwayomi/suwayomi.sh
 
 EXPOSE 4567
 ENTRYPOINT ["tini", "--"]
