@@ -11,12 +11,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: downcase entries
-        run: GH_USERNAME=${GITHUB_REPOSITORY,,,} >> ${GITHUB_ENV}
+        id: downcase
+        run: |
+          username=$(echo "$GITHUB_REPOSITORY_OWNER" | tr '[:upper:]' '[:lower:]')
+          echo "username=$username" >> $GITHUB_OUTPUT
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ env.GH_USERNAME }}
+          username: ${{ steps.downcase.output.username }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
     
       - name: Checkout repository
@@ -71,7 +74,7 @@ jobs:
         with:
           image: ${{ steps.build_containerfile.outputs.image }}
           tags: ${{ steps.build_containerfile.outputs.tags }}
-          registry: ghcr.io/${{ env.GH_USERNAME }}
-          username: ${{ env.GH_USERNAME }}
+          registry: ghcr.io/${{ steps.downcase.output.username }}
+          username: ${{ env.steps.downcase.output.username }}
           password: ${{ github.token }}
       
