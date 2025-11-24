@@ -75,6 +75,6 @@ jobs:
           image: ${{ steps.build_containerfile.outputs.image }}
           tags: ${{ steps.build_containerfile.outputs.tags }}
           registry: ghcr.io/${{ steps.downcase.outputs.username }}
-          username: ${{ env.steps.downcase.outputs.username }}
+          username: ${{ steps.downcase.outputs.username }}
           password: ${{ github.token }}
       

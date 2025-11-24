@@ -27,7 +27,7 @@ spec:
         #   name: suwayomi-logs
         - mountPath: /suwayomi/server.conf
           name: suwayomi-config-file
-          subpath: server.conf              
+          subPath: server.conf              
   volumes:
     - name: suwayomi-directory
       hostPath:
