@@ -35,7 +35,7 @@ Currently the only environment variable used by this setup is:
 |:--------------------------------------:|:--------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
 |                 **TZ**                 |               `Etc/UTC`                |                                                                                                              What time zone the container thinks it is.                                                                                                               |                                                                                                          |
 
-Instead of using environment variables, this setup leverages the support for that podman has for k8s ConfigMaps, and have our server.conf be a mounted config map so that our server settings are static and defined by the yaml file.
+Instead of using environment variables, this setup leverages the support that podman has for k8s ConfigMaps, and have our server.conf be a mounted config map so that the server settings are static and defined by the yaml file.
 
 ```yaml
 ---
@@ -68,7 +68,7 @@ data:
 > See the [Suwayomi wiki page on configuration](https://github.com/Suwayomi/Suwayomi-Server/wiki/Configuring-Suwayomi%E2%80%90Server) in the [Suwayomi-Server](https://github.com/Suwayomi/Suwayomi-Server) repository for the default values and explanation
 
 ### Downloads Folder
-If you want to use different download folder, you can set that through either volumemounts or the server.conf configMap. Remember that if you change the `server.downloadsPath` value and want the downloads to be persisted, you need to map the same directory on your volumeMounts definitions.
+If you want to use different download folder, you can set that through either `volumeMounts` or the server.conf configMap. Remember that if you change the `server.downloadsPath` value and want the downloads to be persisted, you need to map the same directory on your volumeMounts definitions.
 
 ```yaml
     ...
@@ -94,8 +94,6 @@ If you want to use different download folder, you can set that through either vo
     server.excludeEntryWithUnreadChapters = true
     ...
 ```
-
-# Image tags
 
 # Credit
 
