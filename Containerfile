@@ -65,7 +65,7 @@ ENV PATH="${JAVA_HOME}bin:${PATH}"
 
 COPY --from=jre-builder /suwa-jre-17/ $JAVA_HOME
 COPY --from=jre-builder /$SUWAYOMI_RELEASE_FILENAME suwayomi.jar
-COPY ./suwayomi.sh suwayomi.sh
+COPY ./suwayomi.sh /suwayomi/suwayomi.sh
 
 EXPOSE 4567
 ENTRYPOINT ["tini", "--"]
