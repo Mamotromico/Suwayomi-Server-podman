@@ -63,11 +63,11 @@ ENV JAVA_HOME=/opt/jdk/jdk-17/
 ENV PATH="${JAVA_HOME}bin:${PATH}"
 
 COPY --from=jre-builder /suwa-jre-17/ $JAVA_HOME
-COPY --from=jre-builder /$SUWAYOMI_RELEASE_FILENAME suwayomi.jar
-COPY ./suwayomi.sh /suwayomi/suwayomi.sh
+COPY --from=jre-builder /$SUWAYOMI_RELEASE_FILENAME /usr/local/bin/suwayomi.jar
+COPY ./suwayomi.sh /usr/local/bin/suwayomi.sh
 RUN chmod +x /usr/local/bin/tini && \
-    chmod +x /suwayomi/suwayomi.sh
+    chmod +x /usr/local/bin/suwayomi.sh
 
 EXPOSE 4567
 ENTRYPOINT ["tini", "--"]
-CMD ["/suwayomi/suwayomi.sh"]
+CMD ["suwayomi.sh"]
