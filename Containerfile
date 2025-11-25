@@ -62,8 +62,8 @@ COPY --from=jre-builder /suwa-jre-17/ $JAVA_HOME
 COPY --from=jre-builder /$SUWAYOMI_RELEASE_FILENAME /usr/local/bin/suwayomi.jar
 COPY ./suwayomi.sh /usr/local/bin/suwayomi.sh
 RUN microdnf install -y glibc-langpack-en &&\
-    sed -i 's/^LANG=.*/LANG="en_US.utf8"/' /etc/locale.conf &&\
-    set ENV LC_ALL=en_US.utf8 &&\
+    sed -i 's/^LANG=.*/LANG="en_US.UTF-8"/' /etc/locale.conf &&\
+    set ENV LC_ALL=en_US.UTF-8 &&\
     chmod +rx /usr/local/bin/tini &&\
     chmod +rx /usr/local/bin/suwayomi.sh &&\
     chmod +rx /usr/local/bin/suwayomi.jar &&\
