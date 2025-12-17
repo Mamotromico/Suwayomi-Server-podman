@@ -42,7 +42,7 @@ spec:
         name: suwayomi-config 
     - name: suwayomi-directory
       hostPath:
-        path:  # your host directory path
+        path: /path/to/your/data # your host directory path
         type: DirectoryOrCreate
     # - name: suwayomi-downloads
     #   hostPath:
