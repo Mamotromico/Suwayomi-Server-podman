@@ -28,7 +28,7 @@ RUN $JAVA_HOME/bin/jlink \
         --output /suwa-jre-17
 
 #Final image
-FROM registry.access.redhat.com/ubi10/ubi-minimal:10.1
+FROM registry.access.redhat.com/ubi10:10.1
 
 ARG SUWAYOMI_RELEASE_TAG
 ARG SUWAYOMI_RELEASE_FILENAME
