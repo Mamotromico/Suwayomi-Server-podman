@@ -71,9 +71,10 @@ jobs:
             SUWAYOMI_RELEASE_TAG=${{steps.get_latest_suwayomi_release_metadata.outputs.suwayomi_release_tag}}
             SUWAYOMI_RELEASE_FILENAME=${{steps.get_latest_suwayomi_release_metadata.outputs.suwayomi_release_filename}}
             SUWAYOMI_RELEASE_DOWNLOAD_URL=${{steps.get_latest_suwayomi_release_metadata.outputs.suwayomi_release_url}}
+            TINI_RELEASE_TAG=${{steps.get_latest_tini_release_metadata.outputs.tini_release_tag}}
+            SUPERCRONIC_RELEASE_TAG=${{steps.get_latest_supercronic_release_metadata.outputs.supercronic_release_tag}}
             BUILD_DATE=${{steps.get_latest_suwayomi_release_metadata.outputs.build_date}}
             GIT_COMMIT=${{steps.get_latest_suwayomi_release_metadata.outputs.git_commit}}
-            TINI_RELEASE_TAG=${{steps.get_latest_tini_release_metadata.outputs.tini_release_tag}}
 
       - name: Push To ghcr
         id: push_to_ghcr
