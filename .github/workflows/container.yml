@@ -50,6 +50,13 @@ jobs:
           tini_release_tag=$(jq -r '.tag_name' ${{ runner.temp }}/latest_tini_release.json)
           echo "tini_release_tag=$tini_release_tag" >> $GITHUB_OUTPUT
 
+      - name: Get latest supercronic release metadata
+        id: get_latest_supercronic_release_metadata
+        run: |
+          curl -s https://api.github.com/repos/aptible/supercronic/releases/latest > ${{ runner.temp }}/latest_supercronic_release.json
+          supercronic_release_tag=$(jq -r '.tag_name' ${{ runner.temp }}/latest_supercronic_release.json)
+          echo "supercronic_release_tag=$supercronic_release_tag" >> $GITHUB_OUTPUT
+
       - name: Build containerfile
         id: build_containerfile
         uses: redhat-actions/buildah-build@v2
