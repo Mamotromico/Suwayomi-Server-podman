@@ -61,8 +61,7 @@ ENV PATH="${JAVA_HOME}bin:${PATH}"
 COPY --from=jre-builder /suwa-jre-17/ $JAVA_HOME
 COPY --from=jre-builder /$SUWAYOMI_RELEASE_FILENAME /usr/local/bin/suwayomi.jar
 COPY ./suwayomi.sh /usr/local/bin/suwayomi.sh
-RUN microdnf install -y 
-    chmod +rx /usr/local/bin/tini &&\
+RUN chmod +rx /usr/local/bin/tini &&\
     chmod +rx /usr/local/bin/suwayomi.sh &&\
     chmod +rx /usr/local/bin/suwayomi.jar &&\
     chmod 777 /suwayomi
