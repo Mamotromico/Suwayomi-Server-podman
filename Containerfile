@@ -28,16 +28,18 @@ RUN $JAVA_HOME/bin/jlink \
         --output /suwa-jre-17
 
 #Final image
-FROM registry.access.redhat.com/ubi10:10.1
+FROM registry.access.redhat.com/ubi10-micro:10.1
 
 ARG SUWAYOMI_RELEASE_TAG
 ARG SUWAYOMI_RELEASE_FILENAME
 ARG SUWAYOMI_RELEASE_DOWNLOAD_URL
+ARG TINI_RELEASE_TAG
+ARG SUPERCRONIC_RELEASE_TAG
 ARG BUILD_DATE
 ARG GIT_COMMIT
-ARG TINI_RELEASE_TAG
 
 ADD https://github.com/krallin/tini/releases/download/${TINI_RELEASE_TAG}/tini /usr/local/bin/tini
+ADD https://github.com/aptible/supercronic/releases/download/${SUPERCRONIC_RELEASE_TAG}/supercronic-linux-amd64 /usr/local/bin/supercronic
 
 WORKDIR /suwayomi
 
@@ -61,11 +63,14 @@ ENV PATH="${JAVA_HOME}bin:${PATH}"
 COPY --from=jre-builder /suwa-jre-17/ $JAVA_HOME
 COPY --from=jre-builder /$SUWAYOMI_RELEASE_FILENAME /usr/local/bin/suwayomi.jar
 COPY ./suwayomi.sh /usr/local/bin/suwayomi.sh
+COPY ./suwayomi-tmp-cleanup /etc/cron.d/suwayomi
 RUN chmod +rx /usr/local/bin/tini &&\
     chmod +rx /usr/local/bin/suwayomi.sh &&\
     chmod +rx /usr/local/bin/suwayomi.jar &&\
+    chmod +rx /usr/local/bin/supercronic &&\
     chmod 777 /suwayomi
-# The /suwayomi directory permissions can probably be more restrictive. Needs more testing
+    # The /suwayomi directory permissions can probably be more restrictive. Needs more testing
+RUN supercronic /etc/cron.d/suwayomi &    
 
 EXPOSE 4567
 ENTRYPOINT ["tini", "--"]

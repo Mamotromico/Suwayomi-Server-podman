@@ -1,0 +1,2 @@
+# Clean daily at 3:00 AM
+0 3 * * * find /tmp/Tachidesk -mindepth 1 -mmin +720 -delete 2>/dev/null || true
