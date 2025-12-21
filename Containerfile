@@ -69,8 +69,7 @@ RUN chmod +rx /usr/local/bin/tini &&\
     chmod +rx /usr/local/bin/suwayomi.jar &&\
     chmod +rx /usr/local/bin/supercronic &&\
     chmod 777 /suwayomi
-    # The /suwayomi directory permissions can probably be more restrictive. Needs more testing
-RUN supercronic /etc/cron.d/suwayomi &    
+    # The /suwayomi directory permissions can probably be more restrictive. Needs more testing  
 
 EXPOSE 4567
 ENTRYPOINT ["tini", "--"]
