@@ -84,9 +84,13 @@ data:
     server.webUIFlavor = "WebUI" # "WebUI" or "Custom"
     server.webUIChannel = STABLE # "BUNDLED" or "STABLE" or "PREVIEW"
     server.webUIUpdateCheckInterval = 23
+    server.webUISubpath = ""
+
+    # webView
+    server.kcefEnabled = false
 
     # downloader
-    server.downloadAsCbz = false
+    server.downloadAsCbz = true
     server.downloadsPath = ""
     server.autoDownloadNewChapters = false
     server.excludeEntryWithUnreadChapters = true
@@ -115,7 +119,9 @@ data:
     server.maxLogFiles = 31
     server.maxLogFileSize = "10mb"
     server.maxLogFolderSize = "100mb"
-    server.extensionRepos = []
+
+    # extensions
+    server.extensionStores = []
     server.maxSourcesInParallel = 6
 
     # backup
@@ -123,6 +129,13 @@ data:
     server.backupTime = "00:00"
     server.backupInterval = 1
     server.backupTTL = 14
+    server.autoBackupIncludeManga = true
+    server.autoBackupIncludeCategories = true
+    server.autoBackupIncludeChapters = true
+    server.autoBackupIncludeTracking = true
+    server.autoBackupIncludeHistory = true
+    server.autoBackupIncludeClientData = true
+    server.autoBackupIncludeServerSettings = true
 
     # local source
     server.localSourcePath = ""
@@ -144,9 +157,10 @@ data:
     server.opdsShowOnlyDownloadedChapters = false
     server.opdsChapterSortOrder = "DESC"
     server.opdsCbzMimetype = "MODERN"
+    server.opdsSkipChapterMetadataFeed = false
 
     #KoReader sync
-    server.koreaderSyncServerUrl = "http://localhost:17200"
+    server.koreaderSyncServerUrl = "https://sync.koreader.rocks/"
     server.koreaderSyncUsername = ""
     server.koreaderSyncUserkey = ""
     server.koreaderSyncDeviceId = ""
@@ -161,4 +175,18 @@ data:
     server.databaseUsername = ""
     server.databasePassword = ""
     server.useHikariConnectionPool = true
+
+    #KCFE
+    server.kcfe
+
+    #SyncYomi
+    server.syncYomiEnabled = false
+    server.syncYomiHost = ""
+    server.syncYomiApiKey = ""
+    server.syncDataManga = true
+    server.syncDataChapters = true
+    server.syncDataTracking = true
+    server.syncDataHistory = true
+    server.syncDataCategories = true
+    server.syncInterval = "0s"
 ---
