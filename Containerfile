@@ -1,5 +1,5 @@
 # Build slim JRE for final image
-FROM docker.io/eclipse-temurin:25-jdk-ubi10-minimal AS jre-builder
+FROM docker.io/eclipse-temurin:25.0.3_9-jdk-ubi10-minimal AS jre-builder
 
 ARG SUWAYOMI_RELEASE_FILENAME
 ARG SUWAYOMI_RELEASE_DOWNLOAD_URL
