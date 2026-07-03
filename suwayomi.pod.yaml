@@ -176,9 +176,6 @@ data:
     server.databasePassword = ""
     server.useHikariConnectionPool = true
 
-    #KCFE
-    server.kcfe
-
     #SyncYomi
     server.syncYomiEnabled = false
     server.syncYomiHost = ""
